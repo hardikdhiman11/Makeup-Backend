@@ -1,8 +1,9 @@
 package com.example.makeup.controller;
 
-import com.example.makeup.exception.UserNotFoundException;
+import com.example.makeup.dto.UserDto;
 import com.example.makeup.repo.UserRepository;
 import com.example.makeup.service.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,28 +12,28 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class TestController {
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
     @GetMapping("/hello")
     public String hello(){
         return "Hello Spring Boot";
     }
 
     @GetMapping("/user")
-    public ResponseEntity<String> getUser(@RequestParam("email") String email){
-        log.info("Finding user by email string");
-        userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not found by this id"));
-        return ResponseEntity.ok("User found");
+    public ResponseEntity<?> getUser(@RequestParam("email") String email){
+        var userDto = userService.getUserByEmail(email);
+        return ResponseEntity.ok(userDto);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<String> addUser(@RequestParam("email") String email,
-                                          @RequestParam("password")String password){
-        userService.addUser(email,password);
-        return ResponseEntity.ok("User saved successfully");
+    public String addUser(@RequestBody UserDto userDto){
+        log.info("Inside user post request controller");
+        userService.addUser(userDto);
+        return "User saved successfully";
     }
 
 
