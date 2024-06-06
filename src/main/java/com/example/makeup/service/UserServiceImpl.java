@@ -18,6 +18,8 @@ public class UserServiceImpl {
 
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final UserMapper userMapper;
 
     public boolean addUser(UserDto userDto){
         try {
@@ -39,6 +41,8 @@ public class UserServiceImpl {
 
     public UserDto getUserByEmail(String email){
         var user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException(MessageResponse.USER_NOT_PRESENT));
-        return UserMapper.INSTANCE.userToUserDto(user);
+        var userDto =  userMapper.userToUserDto(user);
+        log.info("Email from userDto: {}",userDto.getEmail());
+        return userDto;
     }
 }
