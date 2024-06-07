@@ -8,7 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,7 +23,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    @Autowired
     private final JpaUserDetailsService userDetailsService;
+    @Autowired
+    private final JwtUtils jwtUtils;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -33,7 +41,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader==null || !authHeader.startsWith("Bearer ")){
             return;
         }
+        if (jwt!=null && jwtUtils.validateJwt(jwt)){
+            String username = jwtUtils.getUserNameFromJwt(jwt);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(userDetails.getUsername(),
+                            userDetails.getPassword(), userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        }
         filterChain.doFilter(request,response);
     }
 }
