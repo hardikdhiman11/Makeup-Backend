@@ -28,6 +28,14 @@ public class GlobalExceptionHandler {
         return new  ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(PasswordNotMatchedException.class)
+    public ResponseEntity<?> passwordNotMatchedException(PasswordNotMatchedException e){
+        log.info("Inside GlobalExceptionHandler: ParentExceptionHandler method");
+        Map<String,String> map = new HashMap<>();
+        map.put("message",MessageResponse.UNMATCHED_PASSWORD );
+        return new  ResponseEntity<>(map, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler({NonUniqueResultException.class, IncorrectResultSizeDataAccessException.class})
     public ResponseEntity<?> NonUniqueResultException(Exception e){
         log.info("Inside GlobalExceptionHandler: NonUniqueResultException method");

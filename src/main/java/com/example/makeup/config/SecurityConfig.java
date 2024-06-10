@@ -8,12 +8,15 @@ import com.example.makeup.utils.WHITELIST_UTILS;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,27 +28,33 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig{
 
-    @Autowired
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-    @Autowired
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    @Autowired
-    private final JpaUserDetailsService userDetailsService;
-    @Autowired
+    private final JpaUserDetailsService jpaUserDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+                          CustomAccessDeniedHandler customAccessDeniedHandler,
+                          @Qualifier("customUserDetailsService") JpaUserDetailsService jpaUserDetailsService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter){
+        this.customAuthenticationEntryPoint=customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler=customAccessDeniedHandler;
+        this.jpaUserDetailsService=jpaUserDetailsService;
+        this.jwtAuthenticationFilter=jwtAuthenticationFilter;
+    }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
     @Bean
+    @Qualifier("customDaoAuthProvider")
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
-        return new DaoAuthenticationProvider();
+        provider.setUserDetailsService(jpaUserDetailsService);
+        return provider;
     }
 
     @Bean
@@ -64,8 +73,8 @@ public class SecurityConfig{
                                      .anyRequest().authenticated();
                          }
                  )
-                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                 .authenticationProvider(authenticationProvider())
+//                 .authenticationProvider(authenticationProvider())
+//                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                  .sessionManagement(sessionManagement->
                          sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .exceptionHandling(e->{

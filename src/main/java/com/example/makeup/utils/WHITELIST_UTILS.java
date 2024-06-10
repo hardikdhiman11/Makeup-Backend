@@ -9,7 +9,9 @@ public interface WHITELIST_UTILS {
             "/swagger-resources",
             "/swagger-ui.html/**",};
     String[] POST_REQUESTS = {
-            "/user"
+            "/user",
+            "/login",
+            "/signup"
     };
 
 

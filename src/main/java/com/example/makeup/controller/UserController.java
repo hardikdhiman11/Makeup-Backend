@@ -31,10 +31,10 @@ public class UserController {
         var userDto = userService.getUserByEmail(email);
         return ResponseEntity.ok(userDto);
     }
-    @GetMapping("/user")
-    public ResponseEntity<?> getUserById(@RequestParam("id") long id){
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatusCode.valueOf(200));
-    }
+//    @GetMapping("/user")
+//    public ResponseEntity<?> getUserById(@RequestParam("id") long id){
+//        return new ResponseEntity<>(userService.getUserById(id), HttpStatusCode.valueOf(200));
+//    }
     @PostMapping("/user")
     public String addUser(@RequestBody UserDto userDto){
         log.info("Inside user post request controller");
