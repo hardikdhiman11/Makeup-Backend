@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+
         }
         filterChain.doFilter(request,response);
     }
