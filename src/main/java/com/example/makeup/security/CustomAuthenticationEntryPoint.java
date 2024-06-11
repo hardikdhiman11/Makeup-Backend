@@ -19,9 +19,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    private final HandlerExceptionResolver exceptionResolver;
     @Autowired
-    @Qualifier("handlerExceptionResolver")
-    private HandlerExceptionResolver exceptionResolver;
+    public CustomAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver){
+        this.exceptionResolver = exceptionResolver;
+    }
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.info("Inside Custom authentication Entry Point");
@@ -32,7 +34,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         log.info("Authentication exception : \n getCause: {} \n getStackTrace: {} ",
                 authException.getCause(),
                 Arrays.stream(authException.getStackTrace()).collect(Collectors.toList()));
-        exceptionResolver.resolveException(request,response,null,authException);
+        this.exceptionResolver.resolveException(request,response,null,authException);
 //        response.setContentType("application/json");
 //        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 //        response.getOutputStream().println("{ \"error\": \"" + authException.getMessage() + "\" }");

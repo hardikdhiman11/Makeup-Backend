@@ -73,13 +73,13 @@ public class SecurityConfig{
                                      .anyRequest().authenticated();
                          }
                  )
-//                 .authenticationProvider(authenticationProvider())
-//                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                 .authenticationProvider(authenticationProvider())
+                 .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                  .sessionManagement(sessionManagement->
                          sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .exceptionHandling(e->{
-                     e.authenticationEntryPoint(customAuthenticationEntryPoint);
-                     e.accessDeniedHandler(customAccessDeniedHandler);
+                     e.authenticationEntryPoint(this.customAuthenticationEntryPoint);
+                     e.accessDeniedHandler(this.customAccessDeniedHandler);
                  });
          return httpSecurity.build();
     }

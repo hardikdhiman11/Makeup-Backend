@@ -6,4 +6,5 @@ public interface MessageResponse {
     String INTERNAL_SERVER_ERROR = "Internal server error";
     String UNMATCHED_PASSWORD = "Wrong password attempted";
     String SUCCESSFULL = "Sucessfull";
+    String USER_EXISTS = "User already exists";
 }

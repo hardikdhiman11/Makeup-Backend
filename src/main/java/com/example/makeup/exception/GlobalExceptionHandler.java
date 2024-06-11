@@ -30,10 +30,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PasswordNotMatchedException.class)
     public ResponseEntity<?> passwordNotMatchedException(PasswordNotMatchedException e){
-        log.info("Inside GlobalExceptionHandler: ParentExceptionHandler method");
+        log.info("Inside GlobalExceptionHandler: PasswordNotMatchedException method");
         Map<String,String> map = new HashMap<>();
         map.put("message",MessageResponse.UNMATCHED_PASSWORD );
-        return new  ResponseEntity<>(map, HttpStatus.FORBIDDEN);
+        return new  ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<?> userAlreadyExistsException(UserAlreadyExistsException e){
+        log.info("Inside GlobalExceptionHandler: userAlreadyExistsException method");
+        Map<String,String> map = new HashMap<>();
+        map.put("message",MessageResponse.USER_EXISTS);
+        return new  ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({NonUniqueResultException.class, IncorrectResultSizeDataAccessException.class})

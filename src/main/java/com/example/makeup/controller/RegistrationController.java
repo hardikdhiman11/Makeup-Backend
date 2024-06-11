@@ -3,6 +3,7 @@ package com.example.makeup.controller;
 import com.example.makeup.dto.LoginDto;
 import com.example.makeup.dto.UserDto;
 import com.example.makeup.exception.PasswordNotMatchedException;
+import com.example.makeup.exception.UserAlreadyExistsException;
 import com.example.makeup.service.RegistrationService;
 import com.example.makeup.utils.MessageResponse;
 import com.google.gson.JsonObject;
@@ -31,7 +32,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<JsonObject> signup(@RequestBody UserDto userDto){
+    public ResponseEntity<JsonObject> signup(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
         String jwt = registrationService.registerUser(userDto);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("jwtToken",jwt);

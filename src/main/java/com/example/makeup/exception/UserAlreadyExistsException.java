@@ -1,2 +1,4 @@
-package com.example.makeup.exception;public class UserAlreadyExists {
+package com.example.makeup.exception;
+
+public class UserAlreadyExistsException extends Exception{
 }
