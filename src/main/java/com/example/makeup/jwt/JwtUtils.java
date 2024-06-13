@@ -1,30 +1,27 @@
 package com.example.makeup.jwt;
 
-import com.example.makeup.entity.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Slf4j
 @Service
 public class JwtUtils {
-    @Value("{jwt.secret}")
-    private  String jwtSercret;
+    @Value("${jwt.string.secret}")
+    private  String jwtSecret;
 
 
     public Key key(){
-        return Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtSercret));
+        byte[] keyBytes = Decoders.BASE64.decode(this.jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
     public <T> T extractClaims(String token,Function<Claims, T> getClaims) {
         var claims = Jwts
@@ -39,9 +36,10 @@ public class JwtUtils {
     }
 
     public String generateJwt(Authentication authentication){
-        var userPrincipal = (UserDetails) authentication.getPrincipal();
+        var userPrincipal = authentication.getPrincipal().toString();
+        log.info("User Principal is {}",userPrincipal);
         return Jwts.builder()
-                .setSubject(userPrincipal.getUsername())
+                .setSubject(userPrincipal)
                 .setIssuedAt(new Date())
                 .setExpiration(null)
                 .signWith(key(), SignatureAlgorithm.HS256)

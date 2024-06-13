@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> parentExceptionHandling(Exception e){
         log.info("Inside GlobalExceptionHandler: ParentExceptionHandler method");
         Map<String,String> map = new HashMap<>();
-        map.put("message",MessageResponse.INTERNAL_SERVER_ERROR );
+        map.put("message",e.getClass().getName() );
         return new  ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

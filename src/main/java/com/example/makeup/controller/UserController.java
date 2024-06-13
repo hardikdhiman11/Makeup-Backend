@@ -1,6 +1,7 @@
 package com.example.makeup.controller;
 
 import com.example.makeup.dto.UserDto;
+import com.example.makeup.jwt.JwtUtils;
 import com.example.makeup.repo.UserRepository;
 import com.example.makeup.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,9 +22,15 @@ public class UserController {
     private final UserRepository userRepository;
     @Autowired
     private final UserServiceImpl userService;
+    @Autowired
+    private JwtUtils jwtUtils;
     @GetMapping("/hello")
-    public String hello(){
+    public String hello(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7).trim();
+        boolean isValid = jwtUtils.validateJwt(token);
+        if (isValid==true)
         return "Hello Spring Boot";
+        else  return "Jwt not valid";
     }
 
     @GetMapping("/user")

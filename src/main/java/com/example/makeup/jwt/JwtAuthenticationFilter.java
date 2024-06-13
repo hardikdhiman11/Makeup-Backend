@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwt = authHeader.substring(7);
+        String jwt = authHeader.split(" ")[1].trim();
 
 
         if (jwt!=null && jwtUtils.validateJwt(jwt)){
